@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة أفراح المحايا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-navy: #0a192f;
+            --luxury-gold: #c5a059;
+            --white: #ffffff;
+            --bg-gray: #f2f5f8;
+            --overlay: rgba(0, 0, 0, 0.75);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Almarai', sans-serif;
+            background-color: var(--bg-gray);
+            margin: 0;
+            padding: 10px;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 10px auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+        }
+
+        /* الهيدر والمخطوطة */
+        .header {
+            background-color: var(--deep-navy);
+            padding: 35px 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--luxury-gold);
+        }
+
+        .header img {
+            max-width: 220px;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        /* البحث */
+        .search-section { padding: 25px 15px; text-align: center; background: #fff; }
+        .search-section input {
+            width: 100%;
+            max-width: 500px;
+            padding: 14px 20px;
+            border-radius: 30px;
+            border: 2px solid #eef1f4;
+            font-family: 'Almarai';
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+        }
+        .search-section input:focus { border-color: var(--luxury-gold); }
+
+        /* الجدول المتجاوب */
+        .table-container { padding: 0 15px 30px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        thead th {
+            font-family: 'Alexandria';
+            padding: 15px 10px;
+            color: var(--deep-navy);
+            border-bottom: 2px solid var(--luxury-gold);
+            font-weight: 700;
+        }
+        tbody tr { border-bottom: 1px solid #f1f1f1; transition: 0.2s; }
+        tbody tr:hover { background-color: #fdfaf4; }
+        tbody td { padding: 18px 10px; text-align: center; vertical-align: middle; }
+        
+        .col-date { font-weight: 700; color: var(--deep-navy); font-size: 0.95rem; white-space: pre-line; }
+        .col-groom { font-weight: 700; color: #333; font-size: 1rem; }
+        .col-hall { color: #666; font-size: 0.9rem; }
+
+        /* التذييل */
+        .footer { padding: 40px 15px; text-align: center; border-top: 1px solid #eee; }
+        .blessing { font-family: 'Alexandria'; font-size: 1.4rem; color: var(--deep-navy); margin-bottom: 30px; font-weight: 700; }
+        .branding-info { border-top: 1px solid #ddd; padding-top: 25px; display: inline-block; width: 90%; }
+        .platform-txt { font-weight: 700; font-size: 1.3rem; color: var(--deep-navy); }
+        .sponsor-txt { color: var(--luxury-gold); font-size: 1.1rem; margin-top: 5px; }
+
+        /* الأزرار */
+        .btn { border: none; border-radius: 50px; cursor: pointer; font-family: 'Almarai'; font-weight: 700; transition: 0.3s; padding: 12px 25px; }
+        .btn-gold { background: var(--luxury-gold); color: white; }
+        .btn-navy { background: var(--deep-navy); color: white; }
+        .btn-gray { background: #eee; color: #555; }
+        .admin-trigger { background: none; border: none; color: #bbb; font-size: 0.75rem; margin-top: 40px; cursor: pointer; }
+
+        /* Modals (النوافذ المنبثقة) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay);
+            display: none; justify-content: center; align-items: center;
+            z-index: 9999; backdrop-filter: blur(8px); padding: 10px;
+        }
+        .modal-card {
+            background: white; border-radius: 20px; width: 100%; max-width: 450px;
+            padding: 30px; border-top: 8px solid var(--luxury-gold);
+            animation: modalFade 0.3s ease-out;
+        }
+        @keyframes modalFade { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+        .modal-card h3 { font-family: 'Alexandria'; text-align: center; margin-bottom: 25px; color: var(--deep-navy); }
+        .modal-card input {
+            width: 100%; padding: 14px; margin-bottom: 15px;
+            border: 2px solid #f0f0f0; border-radius: 12px; font-family: 'Almarai';
+        }
+        .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+
+        @media (max-width: 600px) {
+            .header img { max-width: 160px; }
+            .blessing { font-size: 1.1rem; }
+            .platform-txt { font-size: 1.1rem; }
+            tbody td { padding: 15px 8px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="logo.png" alt="شعار المحياني">
+    </div>
+
+    <div class="search-section">
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="ابحث عن اسم أو قاعة أو تاريخ...">
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th width="25%">اليوم والتاريخ</th>
+                    <th width="45%">اسم العريس</th>
+                    <th width="30%">الموقع / القاعة</th>
+                    <th id="adminHeader" style="display:none;">تحكم</th>
+                </tr>
+            </thead>
+            <tbody id="mainTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <div class="blessing">" بارك الله لهما وبارك عليهما وجمع بينهما بخير "</div>
+        <div class="branding-info">
+            <div class="platform-txt">منصة قبيلة المحايا الإعلامية</div>
+            <div class="sponsor-txt">برعاية رجل الأعمال / عيد سلطان المحياني</div>
+        </div>
+        
+        <div id="adminArea" style="display:none; margin-top:25px;">
+            <button class="btn btn-gold" onclick="openEditModal()">إضافة مناسبة جديدة</button>
+            <br><button class="admin-trigger" onclick="logout()" style="color:#e74c3c;">خروج</button>
+        </div>
+        <button id="loginBtn" class="admin-trigger" onclick="openLoginModal()">دخول الإدارة</button>
+    </div>
+</div>
+
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3>تسجيل الدخول</h3>
+        <input type="password" id="adminPass" placeholder="كلمة المرور" style="text-align:center;">
+        <div class="modal-btns">
+            <button class="btn btn-gray" onclick="closeModal('loginModal')">إلغاء</button>
+            <button class="btn btn-navy" onclick="doLogin()">دخول</button>
+        </div>
+    </div>
+</div>
+
+<div id="eventModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3 id="modalTitle">إضافة مناسبة</h3>
+        <input type="hidden" id="editIdx" value="-1">
+        <input type="text" id="inDate" placeholder="التاريخ (السبت 1447/07/28)">
+        <input type="text" id="inName" placeholder="اسم العريس">
+        <input type="text" id="inHall" placeholder="القاعة والمدينة">
+        <div class="modal-btns">
+            <button class="btn btn-gray" onclick="closeModal('eventModal')">إلغاء</button>
+            <button class="btn btn-gold" onclick="saveEvent()">حفظ المناسبة</button>
+        </div>
+    </div>
+</div>
+
+<div id="msgModal" class="modal-overlay">
+    <div class="modal-card" style="text-align:center;">
+        <h3 id="msgTitle">تنبيه</h3>
+        <p id="msgBody" style="margin-bottom:20px; color:#555;"></p>
+        <button class="btn btn-navy" onclick="closeModal('msgModal')">موافق</button>
+    </div>
+</div>
+
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-card" style="text-align:center;">
+        <h3 style="color:#e74c3c;">تأكيد الحذف</h3>
+        <p>هل أنت متأكد من حذف هذه المناسبة نهائياً؟</p>
+        <input type="hidden" id="delIdx">
+        <div class="modal-btns">
+            <button class="btn btn-gray" onclick="closeModal('confirmModal')">تراجع</button>
+            <button class="btn btn-navy" style="background:#e74c3c;" onclick="doDelete()">نعم، حذف</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let isAdminActive = false;
+    const tribalData = [
+        {d: "السبت\n28 / 07 / 1447 هـ", n: "محمد بن زويد بن مناحي بن نافل الأوبيض", h: "قاعة البرواز\nالظهران"},
+        {d: "الأحد\n03 / 10 / 1447 هـ", n: "خالد بن قعيد بن مقعد أبو كتيفه", h: "يحدد لاحقاً"},
+        {d: "الثلاثاء\n05 / 10 / 1447 هـ", n: "أحمد بن قاعِد بن محمد بن مدرهم ابوكتيفة", h: "قاعة الصفوة\nالرياض"},
+        {d: "الخميس\n14 / 10 / 1447 هـ", n: "سالم بن طلق بن عبيد بن بجاد الأوبيض", h: "قاعة البيان\nالرياض"},
+        {d: "الجمعة\n15 / 10 / 1447 هـ", n: "عبدالعزيز بن علي بن مزيد بن كليب بن عور المرجلي", h: "يحدد لاحقاً"},
+        {d: "الجمعة\n22 / 10 / 1447 هـ", n: "فيصل بن نوار بن عبيد الله بن نويصح بن هذلا الشيباني", h: "قاعة السفارات\nالرياض"},
+        {d: "الجمعة\n14 / 11 / 1447 هـ", n: "تركي بن عبدالله بن سعود بن مثيب بن كشمير المرجلي", h: "يحدد لاحقاً"},
+        {d: "الخميس\n20 / 11 / 1447 هـ", n: "باني بن ضيف الله بن عايض بن حمد ابوكتيفه", h: "يحدد لاحقاً"},
+        {d: "الخميس\n20 / 11 / 1447 هـ", n: "ريان بن مشعل بن مسحل بن مشعل الأوبيض", h: "قاعة أصايل\nالرياض"},
+        {d: "الجمعة\n21 / 11 / 1447 هـ", n: "خالد بن شبيب بن ظافر بن مزيد بن كليب بن عور المرجلي", h: "يحدد لاحقاً"},
+        {d: "الجمعة\n28 / 11 / 1447 هـ", n: "مبارك بن مدرهم أبو كتيفه", h: "دولة الكويت"},
+        {d: "الخميس\n24 / 01 / 1448 هـ", n: "محمد بن مرزوق علي العجر", h: "قاعة الأسطورة\nالرياض"},
+        {d: "الجمعة\n10 / 02 / 1448 هـ", n: "عادل بن سليمان بن مقعد بن مذكر المرجلي", h: "قاعة الفخامة\nشقراء"},
+        {d: "الجمعة\n21 / 04 / 1448 هـ", n: "عبدالله بن ناصر بن فلاح المرجلي", h: "يحدد لاحقاً"}
+    ];
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function showAppMsg(title, body) {
+        document.getElementById('msgTitle').innerText = title;
+        document.getElementById('msgBody').innerText = body;
+        openModal('msgModal');
+    }
+
+    function openLoginModal() { 
+        document.getElementById('adminPass').value = '';
+        openModal('loginModal'); 
+    }
+
+    function doLogin() {
+        if(document.getElementById('adminPass').value === "1234") {
+            isAdminActive = true;
+            closeModal('loginModal');
+            document.getElementById('adminArea').style.display = 'block';
+            document.getElementById('loginBtn').style.display = 'none';
+            drawTable();
+            showAppMsg("مرحباً بك", "تم تسجيل الدخول بصلاحيات الإدارة.");
+        } else {
+            showAppMsg("خطأ", "كلمة المرور غير صحيحة.");
+        }
+    }
+
+    function logout() { isAdminActive = false; location.reload(); }
+
+    function drawTable() {
+        const body = document.getElementById('mainTableBody');
+        body.innerHTML = '';
+        const list = JSON.parse(localStorage.getItem('mahaya_vFinal')) || tribalData;
+        
+        document.getElementById('adminHeader').style.display = isAdminActive ? 'table-cell' : 'none';
+
+        list.forEach((item, i) => {
+            body.innerHTML += `
+                <tr>
+                    <td class="col-date">${item.d}</td>
+                    <td class="col-groom">${item.n}</td>
+                    <td class="col-hall">${item.h}</td>
+                    ${isAdminActive ? `<td>
+                        <button onclick="openEditModal(${i})" style="color:#f39c12; border:none; background:none; cursor:pointer; font-size:1.2rem;">✏️</button>
+                        <button onclick="askDel(${i})" style="color:#e74c3c; border:none; background:none; cursor:pointer; font-size:1.2rem; margin-right:10px;">🗑️</button>
+                    </td>` : ''}
+                </tr>
+            `;
+        });
+    }
+
+    function openEditModal(i = -1) {
+        if(i === -1) {
+            document.getElementById('modalTitle').innerText = "إضافة مناسبة جديدة";
+            document.getElementById('editIdx').value = "-1";
+            document.getElementById('inDate').value = "";
+            document.getElementById('inName').value = "";
+            document.getElementById('inHall').value = "";
+        } else {
+            const list = JSON.parse(localStorage.getItem('mahaya_vFinal')) || tribalData;
+            document.getElementById('modalTitle').innerText = "تعديل مناسبة";
+            document.getElementById('editIdx').value = i;
+            document.getElementById('inDate').value = list[i].d;
+            document.getElementById('inName').value = list[i].n;
+            document.getElementById('inHall').value = list[i].h;
+        }
+        openModal('eventModal');
+    }
+
+    function saveEvent() {
+        const d = document.getElementById('inDate').value.trim();
+        const n = document.getElementById('inName').value.trim();
+        const h = document.getElementById('inHall').value.trim();
+        const idx = parseInt(document.getElementById('editIdx').value);
+
+        if(!d || !n || !h) { showAppMsg("تنبيه", "يرجى تعبئة كافة الحقول."); return; }
+
+        let db = JSON.parse(localStorage.getItem('mahaya_vFinal')) || tribalData;
+        if(idx === -1) db.push({d, n, h}); else db[idx] = {d, n, h};
+        
+        localStorage.setItem('mahaya_vFinal', JSON.stringify(db));
+        closeModal('eventModal');
+        drawTable();
+    }
+
+    function askDel(i) {
+        document.getElementById('delIdx').value = i;
+        openModal('confirmModal');
+    }
+
+    function doDelete() {
+        const i = document.getElementById('delIdx').value;
+        let db = JSON.parse(localStorage.getItem('mahaya_vFinal')) || tribalData;
+        db.splice(i, 1);
+        localStorage.setItem('mahaya_vFinal', JSON.stringify(db));
+        closeModal('confirmModal');
+        drawTable();
+    }
+
+    function searchTable() {
+        let v = document.getElementById('searchInput').value.toUpperCase();
+        let trs = document.getElementById('mainTableBody').getElementsByTagName('tr');
+        for (let t of trs) {
+            t.style.display = t.innerText.toUpperCase().includes(v) ? "" : "none";
+        }
+    }
+
+    window.onload = drawTable;
+</script>
+
+</body>
+</html>
