@@ -49,6 +49,22 @@
             height: auto;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
         }
+        .header-text {
+    font-family: 'Alexandria', sans-serif; /* نفس الخط البروفيشنال الذي اخترناه */
+    color: var(--white); /* اللون الأبيض ليتناسب مع الخلفية الكحلية */
+    font-size: 1.8rem; /* حجم خط متناسب */
+    margin-top: 15px; /* مسافة بين المخطوطة والنص */
+    font-weight: 700; /* جعل الخط عريضاً وبارزاً */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* ظل خفيف لإبراز النص */
+}
+
+/* تعديل للهواتف لضمان التناسق */
+@media (max-width: 600px) {
+    .header-text {
+        font-size: 1.4rem; /* تصغير الخط قليلاً على الجوال */
+    }
+}
+
 
         /* البحث */
         .search-section { padding: 25px 15px; text-align: center; background: #fff; }
@@ -128,10 +144,11 @@
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <img src="logo.png" alt="شعار المحياني">
-    </div>
+<div class="header">
+    <img src="logo.png" alt="شعار المحياني" class="logo-image">
+    
+    <h1 class="header-text">أفراح قبيلة المحايا</h1>
+</div>
 
     <div class="search-section">
         <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="ابحث عن اسم أو قاعة أو تاريخ...">
