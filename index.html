@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة أفراح المحايا </title>
+    <title>منصة أفراح المحايا</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@400;600;800&family=Alexandria:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             --gold: #d4a853;
@@ -49,7 +52,7 @@
 
         .main-container { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 15px; }
 
-        /* === الشعار المطور (المخطوطة الكبيرة والنبض) === */
+        /* === الشعار المطور === */
         header { text-align: center; padding: 40px 0; }
         .logo-wrapper { position: relative; width: 180px; height: 180px; margin: 0 auto 10px; }
         .logo-ring { position: absolute; inset: 25px; border: 3px solid transparent; border-top-color: var(--gold); border-radius: 50%; animation: logoSpin 4s linear infinite; z-index: 1; }
@@ -101,7 +104,7 @@
         .groom-name { font-weight: 700; color: var(--white); font-size: 1.15rem; display: block; margin-bottom: 5px; }
         .hall-info { color: #aaa; font-size: 0.85rem; opacity: 0.9; }
 
-        /* === النوافذ المنبثقة الموحدة باللون الأسود === */
+        /* === النوافذ المنبثقة === */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(15px); padding: 15px; }
         
         .modal-card { 
@@ -116,7 +119,6 @@
         
         .modal-card h3 { color: #fff; margin-bottom: 25px; font-family: 'Alexandria'; font-weight: 700; }
 
-        /* صف التاريخ (يمنع التمدد) */
         .date-inputs-row { display: flex; gap: 8px; margin-bottom: 15px; direction: rtl; }
         .date-inputs-row select, .date-inputs-row input { 
             background: var(--input-bg); border: 1px solid #222; border-radius: 10px; 
@@ -134,7 +136,6 @@
 
         .admin-area { display: none; text-align: center; margin-top: 30px; }
 
-        /* === التذييل المطور === */
         footer { text-align: center; padding: 60px 15px; border-top: 1px solid rgba(212, 168, 83, 0.15); margin-top: 40px; background: rgba(0,0,0,0.5); }
         .blessing { font-family: 'Amiri', serif; font-size: 1.3rem; color: var(--gold); margin-bottom: 10px; font-weight: 700; white-space: nowrap; }
         .footer-title { font-family: 'Alexandria'; font-size: 1.3rem; color: #fff; font-weight: 700; margin-bottom: 10px; cursor: pointer; user-select: none; }
@@ -243,9 +244,29 @@
 </div>
 
 <script>
-    let isAdminActive = false;
-    const dbKey = "mahaya_final_vFinal_Ultimate_v2";
+    // === إعدادات فايربيس الخاصة بمشروعك ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDWWGfFAMbpkTwjEgBhBYUMw1FndEIAs10",
+      authDomain: "mahaya-events.firebaseapp.com",
+      databaseURL: "https://mahaya-events-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "mahaya-events",
+      storageBucket: "mahaya-events.firebasestorage.app",
+      messagingSenderId: "836742852049",
+      appId: "1:836742852049:web:ec082840e60f44e22b04f0",
+      measurementId: "G-YGBXSN8JR3"
+    };
 
+    // تهيئة فايربيس
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+    const eventsRef = db.ref('events_list'); // اسم الجدول في قاعدة البيانات
+
+    let isAdminActive = false;
+    let eventsData = []; // متغير لتخزين البيانات القادمة من القاعدة
+
+    // البيانات الأولية (تُرفع مرة واحدة فقط إذا كانت القاعدة فارغة)
     const initialData = [
         {d: "السبت\n28 / 07 / 1447 هـ", n: "محمد بن زويد بن مناحي بن نافل الأوبيض", h: "قاعة البرواز - الظهران", c: ""},
         {d: "الأحد\n03 / 10 / 1447 هـ", n: "خالد بن قعيد بن مقعد أبو كتيفه", h: "يحدد لاحقاً", c: ""},
@@ -265,7 +286,9 @@
         {d: "الجمعة\n21 / 04 / 1448 هـ", n: "عبدالله بن ناصر بن فلاح المرجلي", h: "يحدد لاحقاً", c: ""}
     ];
 
+    // دالة ترتيب التواريخ
     function sortHijri(list) {
+        if (!list) return [];
         return list.sort((a, b) => {
             const getVal = (s) => {
                 const m = s.match(/(\d{2})\s\/\s(\d{2})\s\/\s(\d{4})/);
@@ -275,19 +298,40 @@
         });
     }
 
+    // الاستماع للتغييرات من قاعدة البيانات مباشرة
+    eventsRef.on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+            eventsData = val;
+        } else {
+            // إذا كانت القاعدة فارغة، نرفع البيانات الأولية تلقائياً
+            eventsData = initialData;
+            eventsRef.set(initialData);
+        }
+        drawEvents();
+    });
+
     function drawEvents() {
-        const tbody = document.getElementById('eventsTableBody'); tbody.innerHTML = '';
-        let list = sortHijri(JSON.parse(localStorage.getItem(dbKey)) || initialData);
+        const tbody = document.getElementById('eventsTableBody'); 
+        tbody.innerHTML = '';
+        
+        // ترتيب البيانات وعرضها
+        let list = sortHijri([...eventsData]); 
+        
         document.getElementById('adminHeader').style.display = isAdminActive ? 'table-cell' : 'none';
         document.getElementById('adminArea').style.display = isAdminActive ? 'block' : 'none';
+        
         list.forEach((item, i) => {
+            // نحتاج معرفة المؤشر الحقيقي للعنصر في المصفوفة الأصلية للحذف والتعديل
+            let originalIndex = eventsData.indexOf(item);
+            
             const tr = document.createElement('tr');
             const p = item.d.split('\n');
             tr.innerHTML = `<td class="col-date-cell"><span class="day-label">${p[0]}</span><span class="date-label">${p[1]||''}</span></td>
                 <td class="info-cell"><span class="groom-name">${item.n}</span><span class="hall-info ${item.c?'location-intl':''}">${item.c?'🇰🇼 ':''}${item.h}</span></td>
                 ${isAdminActive ? `<td><div style="display:flex; gap:5px; justify-content:center;">
-                    <button style="background:none; border:none; color:var(--gold); cursor:pointer;" onclick="openEditModal(${i})"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button style="background:none; border:none; color:var(--red); cursor:pointer;" onclick="askDelete(${i})"><i class="fa-solid fa-trash-can"></i></button>
+                    <button style="background:none; border:none; color:var(--gold); cursor:pointer;" onclick="openEditModal(${originalIndex})"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button style="background:none; border:none; color:var(--red); cursor:pointer;" onclick="askDelete(${originalIndex})"><i class="fa-solid fa-trash-can"></i></button>
                 </div></td>` : ''}`;
             tbody.appendChild(tr);
         });
@@ -312,24 +356,43 @@
         const n = document.getElementById('inName').value.trim();
         const h = document.getElementById('inHall').value.trim();
         const c = document.getElementById('inCountry').value;
+        
         if(!day || !d || !m || !y || !n || !h) { alert("أكمل البيانات!"); return; }
+        
         const formattedDate = `${day}\n${d} / ${m} / ${y} هـ`;
-        let list = JSON.parse(localStorage.getItem(dbKey)) || initialData;
+        
         const idx = parseInt(document.getElementById('editIdx').value);
-        if(idx === -1) list.push({d:formattedDate, n, h, c}); else list[idx] = {d:formattedDate, n, h, c};
-        localStorage.setItem(dbKey, JSON.stringify(list));
-        closeModal('eventModal'); drawEvents();
+        
+        // نأخذ نسخة من البيانات الحالية
+        let currentList = [...eventsData];
+
+        if(idx === -1) {
+            // إضافة جديد
+            currentList.push({d:formattedDate, n, h, c}); 
+        } else { 
+            // تعديل قائم
+            currentList[idx] = {d:formattedDate, n, h, c};
+        }
+        
+        // الحفظ في قاعدة البيانات السحابية
+        eventsRef.set(currentList)
+            .then(() => {
+                closeModal('eventModal');
+                alert("تم الحفظ بنجاح للجميع!");
+            })
+            .catch((error) => {
+                alert("حدث خطأ أثناء الحفظ: " + error.message);
+            });
     }
 
-    function openEditModal(i) {
+    function openEditModal(originalIndex) {
         document.getElementById('eventModal').style.display = 'flex';
-        document.getElementById('editIdx').value = i;
-        const list = sortHijri(JSON.parse(localStorage.getItem(dbKey)) || initialData);
-        const ev = list[i];
+        document.getElementById('editIdx').value = originalIndex;
+        
+        const ev = eventsData[originalIndex];
         
         document.getElementById('modalTitle').innerText = "تعديل مناسبة";
         
-        // تفكيك التاريخ وإعادة تعبئته
         const parts = ev.d.split('\n');
         document.getElementById('inDayName').value = parts[0].trim();
         
@@ -357,22 +420,34 @@
         document.getElementById('inHall').value = "";
     }
 
-    function askDelete(i) { document.getElementById('deleteIdx').value = i; document.getElementById('deleteConfirmModal').style.display='flex'; }
+    function askDelete(i) { 
+        document.getElementById('deleteIdx').value = i; 
+        document.getElementById('deleteConfirmModal').style.display='flex'; 
+    }
+
     function confirmDelete() {
-        const i = document.getElementById('deleteIdx').value;
-        let list = sortHijri(JSON.parse(localStorage.getItem(dbKey)) || initialData);
-        list.splice(i, 1); localStorage.setItem(dbKey, JSON.stringify(list));
-        closeModal('deleteConfirmModal'); drawEvents();
+        const i = parseInt(document.getElementById('deleteIdx').value);
+        let currentList = [...eventsData];
+        currentList.splice(i, 1);
+        
+        // تحديث قاعدة البيانات بعد الحذف
+        eventsRef.set(currentList)
+            .then(() => {
+                closeModal('deleteConfirmModal');
+            })
+            .catch((error) => {
+                alert("حدث خطأ أثناء الحذف: " + error.message);
+            });
     }
 
     function logout() { isAdminActive = false; location.reload(); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    
     function searchEvents() {
         const v = document.getElementById('searchInput').value.toUpperCase();
         const rows = document.getElementById('eventsTableBody').getElementsByTagName('tr');
         for (let row of rows) { row.style.display = row.innerText.toUpperCase().includes(v) ? "" : "none"; }
     }
-    window.onload = drawEvents;
 </script>
 
 </body>
