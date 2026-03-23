@@ -13,26 +13,81 @@
 
     <style>
         :root {
+            /* ألوان الوضع الليلي (الافتراضي) */
             --gold: #d4a853;
             --gold-dark: #b8923a;
-            --black: #000000;
+            --bg-main: #000000;
+            --bg-table: rgba(0, 0, 0, 0.75);
+            --bg-footer: rgba(0, 0, 0, 0.5);
             --modal-bg: #0a0a0a; 
             --input-bg: #111111;
-            --white: #ffffff;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #222222;
+            --btn-cancel-bg: #333333;
+            --btn-cancel-text: #ffffff;
             --red: #ff4d4d;
             --overlay: rgba(0, 0, 0, 0.88);
             --radius-lg: 20px;
             --radius-pill: 50px;
+            --quote-color: var(--gold); /* لون الاقتباس في الوضع الليلي */
         }
+
+        /* ألوان الوضع الفاتح */
+                /* ألوان الوضع الفاتح - اللؤلؤي والكحلي */
+            /* ألوان الوضع الفاتح - الرملي والبني المحروق */
+        [data-theme="light"] {
+            --gold: #B07D2B; 
+            --bg-main: #F4EFEA; /* لون رملي فاتح جداً */
+            --bg-table: rgba(252, 250, 248, 0.9);
+            --bg-footer: rgba(244, 239, 234, 0.8);
+            --modal-bg: #FCFAF8;
+            --input-bg: #FFFFFF;
+            --text-main: #3E2723; /* بني محروق داكن للنصوص */
+            --text-muted: #6D524C; /* بني فاتح للتفاصيل */
+            --border-color: #D6CDC4;
+            --btn-cancel-bg: #EAE3DC;
+            --btn-cancel-text: #3E2723;
+            --overlay: rgba(244, 239, 234, 0.95);
+            --quote-color: #3E2723; 
+        }
+
+
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Noto Kufi Arabic', sans-serif;
-            background-color: var(--black);
+            background-color: var(--bg-main);
             background-image: linear-gradient(var(--overlay), var(--overlay)), url('422983.jpg');
             background-size: cover; background-position: center top; background-attachment: fixed;
-            margin: 0; color: var(--white); line-height: 1.6; overflow-x: hidden; min-height: 100vh;
+            margin: 0; color: var(--text-main); line-height: 1.6; overflow-x: hidden; min-height: 100vh;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* === زر التبديل بين الوضعين === */
+        .theme-btn {
+            position: absolute;
+            top: 25px;
+            left: 20px;
+            background: rgba(212, 168, 83, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .theme-btn:hover {
+            background: var(--gold);
+            color: var(--bg-main);
+            transform: scale(1.1);
         }
 
         /* === الزخارف الهندسية المتحركة === */
@@ -53,13 +108,13 @@
         .main-container { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 15px; }
 
         /* === الشعار المطور === */
-        header { text-align: center; padding: 40px 0; }
+        header { text-align: center; padding: 40px 0; position: relative; }
         .logo-wrapper { position: relative; width: 180px; height: 180px; margin: 0 auto 10px; }
         .logo-ring { position: absolute; inset: 25px; border: 3px solid transparent; border-top-color: var(--gold); border-radius: 50%; animation: logoSpin 4s linear infinite; z-index: 1; }
-        .logo-ring:nth-child(2) { inset: 35px; border-top-color: var(--white); animation-direction: reverse; animation-duration: 6s; }
+        .logo-ring:nth-child(2) { inset: 35px; border-top-color: var(--text-main); animation-direction: reverse; animation-duration: 6s; }
         
         .logo-icon { 
-            position: absolute; inset: 30px; background: radial-gradient(circle, #222, #000); 
+            position: absolute; inset: 30px; background: radial-gradient(circle, var(--border-color), var(--bg-main)); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
             box-shadow: 0 0 50px rgba(212, 168, 83, 0.4); overflow: visible;
         }
@@ -77,19 +132,20 @@
 
         header h1 {
             font-family: 'Alexandria', sans-serif; font-size: 2rem;
-            margin: 20px 0 0; background: linear-gradient(135deg, #fff, var(--gold));
+            margin: 20px 0 0; background: linear-gradient(135deg, var(--text-main), var(--gold));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .search-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.07); border: 1px solid var(--gold); border-radius: 50px; color: white; text-align: center; margin-bottom: 25px; outline: none; backdrop-filter: blur(10px); font-family: 'Alexandria'; }
+        .search-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.07); border: 1px solid var(--gold); border-radius: 50px; color: var(--text-main); text-align: center; margin-bottom: 25px; outline: none; backdrop-filter: blur(10px); font-family: 'Alexandria'; transition: 0.3s; }
 
         .quote-box { background: rgba(212, 168, 83, 0.05); padding: 25px; border-radius: 20px; border: 1px dashed rgba(212,168,83,0.3); text-align: center; margin-bottom: 25px; backdrop-filter: blur(5px); }
-        .quote-box p { font-family: 'Amiri'; font-size: 1.4rem; color: var(--gold); margin: 0; font-weight: 700; }
+        .quote-box p { font-family: 'Amiri'; font-size: 1.4rem; color: var(--quote-color); margin: 0; font-weight: 700; transition: color 0.4s ease; }
 
         .table-container { 
-            width: 100%; background: rgba(0, 0, 0, 0.75); 
+            width: 100%; background: var(--bg-table); 
             border-radius: var(--radius-lg); border: 1px solid rgba(212, 168, 83, 0.2);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8); overflow: hidden; backdrop-filter: blur(12px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3); overflow: hidden; backdrop-filter: blur(12px);
+            transition: background 0.4s ease;
         }
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -98,14 +154,14 @@
 
         .col-date-cell { width: 110px; }
         .day-label { color: var(--gold); font-weight: 800; font-size: 1rem; display: block; }
-        .date-label { color: var(--white); font-size: 0.8rem; display: block; opacity: 0.7; }
+        .date-label { color: var(--text-main); font-size: 0.8rem; display: block; opacity: 0.7; }
 
         .info-cell { text-align: right; padding-right: 15px; }
-        .groom-name { font-weight: 700; color: var(--white); font-size: 1.15rem; display: block; margin-bottom: 5px; }
-        .hall-info { color: #aaa; font-size: 0.85rem; opacity: 0.9; }
+        .groom-name { font-weight: 700; color: var(--text-main); font-size: 1.15rem; display: block; margin-bottom: 5px; }
+        .hall-info { color: var(--text-muted); font-size: 0.85rem; opacity: 0.9; }
 
         /* === النوافذ المنبثقة === */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(15px); padding: 15px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(10px); padding: 15px; }
         
         .modal-card { 
             background: var(--modal-bg); 
@@ -115,30 +171,31 @@
             width: 100%; 
             max-width: 420px; 
             text-align: center; 
+            transition: background 0.4s ease;
         }
         
-        .modal-card h3 { color: #fff; margin-bottom: 25px; font-family: 'Alexandria'; font-weight: 700; }
+        .modal-card h3 { color: var(--text-main); margin-bottom: 25px; font-family: 'Alexandria'; font-weight: 700; }
 
         .date-inputs-row { display: flex; gap: 8px; margin-bottom: 15px; direction: rtl; }
         .date-inputs-row select, .date-inputs-row input { 
-            background: var(--input-bg); border: 1px solid #222; border-radius: 10px; 
-            color: white; padding: 12px 5px; text-align: center; outline: none; 
-            flex: 1; font-size: 0.9rem; min-width: 0; 
+            background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; 
+            color: var(--text-main); padding: 12px 5px; text-align: center; outline: none; 
+            flex: 1; font-size: 0.9rem; min-width: 0; transition: 0.3s;
         }
         #inDayName { flex: 2.5; } 
 
-        .full-input { width: 100%; padding: 15px; margin-bottom: 15px; background: var(--input-bg); border: 1px solid #222; border-radius: 12px; color: white; text-align: center; outline: none; font-family: inherit; }
+        .full-input { width: 100%; padding: 15px; margin-bottom: 15px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: center; outline: none; font-family: inherit; transition: 0.3s;}
 
         .btn-row { display: flex; gap: 12px; margin-top: 20px; }
         .btn-pill { flex: 1; font-weight: 800; border-radius: 50px; padding: 15px; border: none; cursor: pointer; transition: 0.3s; font-size: 1rem; }
         .btn-save { background: var(--gold); color: #000; }
-        .btn-cancel { background: #333333; color: #fff; }
+        .btn-cancel { background: var(--btn-cancel-bg); color: var(--btn-cancel-text); }
 
         .admin-area { display: none; text-align: center; margin-top: 30px; }
 
-        footer { text-align: center; padding: 60px 15px; border-top: 1px solid rgba(212, 168, 83, 0.15); margin-top: 40px; background: rgba(0,0,0,0.5); }
+        footer { text-align: center; padding: 60px 15px; border-top: 1px solid rgba(212, 168, 83, 0.15); margin-top: 40px; background: var(--bg-footer); transition: background 0.4s ease; }
         .blessing { font-family: 'Amiri', serif; font-size: 1.3rem; color: var(--gold); margin-bottom: 10px; font-weight: 700; white-space: nowrap; }
-        .footer-title { font-family: 'Alexandria'; font-size: 1.3rem; color: #fff; font-weight: 700; margin-bottom: 10px; cursor: pointer; user-select: none; }
+        .footer-title { font-family: 'Alexandria'; font-size: 1.3rem; color: var(--text-main); font-weight: 700; margin-bottom: 10px; cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
@@ -149,6 +206,10 @@
 
 <div class="main-container">
     <header>
+        <button class="theme-btn" onclick="toggleTheme()" title="تغيير المظهر">
+            <i id="themeIcon" class="fa-solid fa-sun"></i>
+        </button>
+
         <div class="logo-wrapper">
             <div class="logo-ring"></div>
             <div class="logo-ring"></div>
@@ -235,7 +296,7 @@
 <div id="deleteConfirmModal" class="modal-overlay">
     <div class="modal-card" style="border-color: var(--red);">
         <h3 style="color: var(--red);">تأكيد الحذف</h3>
-        <p>هل أنت متأكد من حذف هذه المناسبة نهائياً؟</p>
+        <p style="color: var(--text-main);">هل أنت متأكد من حذف هذه المناسبة نهائياً؟</p>
         <input type="hidden" id="deleteIdx">
         <div class="btn-row">
             <button class="btn-pill" style="background:var(--red); color:white;" onclick="confirmDelete()">حذف</button>
@@ -245,6 +306,29 @@
 </div>
 
 <script>
+    // === التحكم بالوضع الفاتح والليلي ===
+    const themeIcon = document.getElementById('themeIcon');
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+
+    // تطبيق الثيم المحفوظ مسبقاً
+    if (currentTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+    }
+
+    function toggleTheme() {
+        let theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+    }
+
     // === إعدادات فايربيس الخاصة بمشروعك ===
     const firebaseConfig = {
       apiKey: "AIzaSyDWWGfFAMbpkTwjEgBhBYUMw1FndEIAs10",
@@ -262,12 +346,11 @@
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.database();
-    const eventsRef = db.ref('events_list'); // اسم الجدول في قاعدة البيانات
+    const eventsRef = db.ref('events_list'); 
 
     let isAdminActive = false;
-    let eventsData = []; // متغير لتخزين البيانات القادمة من القاعدة
+    let eventsData = []; 
 
-    // البيانات الأولية (تُرفع مرة واحدة فقط إذا كانت القاعدة فارغة)
     const initialData = [
         {d: "السبت\n28 / 07 / 1447 هـ", n: "محمد بن زويد بن مناحي بن نافل الأوبيض", h: "قاعة البرواز - الظهران", c: ""},
         {d: "الأحد\n03 / 10 / 1447 هـ", n: "خالد بن قعيد بن مقعد أبو كتيفه", h: "يحدد لاحقاً", c: ""},
@@ -287,7 +370,6 @@
         {d: "الجمعة\n21 / 04 / 1448 هـ", n: "عبدالله بن ناصر بن فلاح المرجلي", h: "يحدد لاحقاً", c: ""}
     ];
 
-    // دالة ترتيب التواريخ
     function sortHijri(list) {
         if (!list) return [];
         return list.sort((a, b) => {
@@ -299,13 +381,11 @@
         });
     }
 
-    // الاستماع للتغييرات من قاعدة البيانات مباشرة
     eventsRef.on('value', (snapshot) => {
         const val = snapshot.val();
         if (val) {
             eventsData = val;
         } else {
-            // إذا كانت القاعدة فارغة، نرفع البيانات الأولية تلقائياً
             eventsData = initialData;
             eventsRef.set(initialData);
         }
@@ -316,14 +396,12 @@
         const tbody = document.getElementById('eventsTableBody'); 
         tbody.innerHTML = '';
         
-        // ترتيب البيانات وعرضها
         let list = sortHijri([...eventsData]); 
         
         document.getElementById('adminHeader').style.display = isAdminActive ? 'table-cell' : 'none';
         document.getElementById('adminArea').style.display = isAdminActive ? 'block' : 'none';
         
         list.forEach((item, i) => {
-            // نحتاج معرفة المؤشر الحقيقي للعنصر في المصفوفة الأصلية للحذف والتعديل
             let originalIndex = eventsData.indexOf(item);
             
             const tr = document.createElement('tr');
@@ -363,19 +441,14 @@
         const formattedDate = `${day}\n${d} / ${m} / ${y} هـ`;
         
         const idx = parseInt(document.getElementById('editIdx').value);
-        
-        // نأخذ نسخة من البيانات الحالية
         let currentList = [...eventsData];
 
         if(idx === -1) {
-            // إضافة جديد
             currentList.push({d:formattedDate, n, h, c}); 
         } else { 
-            // تعديل قائم
             currentList[idx] = {d:formattedDate, n, h, c};
         }
         
-        // الحفظ في قاعدة البيانات السحابية
         eventsRef.set(currentList)
             .then(() => {
                 closeModal('eventModal');
@@ -431,7 +504,6 @@
         let currentList = [...eventsData];
         currentList.splice(i, 1);
         
-        // تحديث قاعدة البيانات بعد الحذف
         eventsRef.set(currentList)
             .then(() => {
                 closeModal('deleteConfirmModal');
